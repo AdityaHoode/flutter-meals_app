@@ -39,6 +39,25 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  List<Meal> _favoriteMeals = [];
+
+  void _toggleFavorites(String mId) {
+    final existingIndex = _favoriteMeals.indexWhere((meal) => meal.id == mId);
+    if (existingIndex >= 0) {
+      setState(() {
+        _favoriteMeals.removeAt(existingIndex);
+      });
+    } else {
+      setState(() {
+        _favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mId));
+      });
+    }
+  }
+
+  bool _isFavorite(String mId) {
+    return _favoriteMeals.any((meal) => meal.id == mId);
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,10 +83,10 @@ class _MyAppState extends State<MyApp> {
       ),
       initialRoute: '/',
       routes: {
-        '/': (ctx) => Tabs(),
+        '/': (ctx) => Tabs(_favoriteMeals),
         CategoryMeals.routeName: (ctx) => CategoryMeals(_availableMeals),
-        MealDetails.routeName: (ctx) => MealDetails(),
-        Filters.routeName: (ctx) => Filters(_filters,_applyFilter),
+        MealDetails.routeName: (ctx) => MealDetails(_toggleFavorites,_isFavorite),
+        Filters.routeName: (ctx) => Filters(_filters, _applyFilter),
       },
     );
   }
